@@ -8,9 +8,12 @@ class GridSystem {
         this.padding = 2;
 
         this.player = { y: player[1], x: player[0], color: "green"}
+        this.player.health = 20;
         this.matrix[this.player.x][this.player.y] = 2;
-        this.enemy = {x :11, y :13, color: "red"}
-        this.matrix[this.enemy.x][this.enemy.y] = 4;
+        this.enemy = {x :23, y :11, color: "red"}
+        this.enemy.health = 20;
+        this.matrix[this.enemy.y][this.enemy.x] = 4;
+        this.player.moves = 5;
 
         document.addEventListener("keydown", this.#movePlayer)
     }
@@ -28,66 +31,78 @@ class GridSystem {
                 this.matrix[this.player.y][this.player.x] = 1;
                 this.matrix[this.player.y][this.player.x - 1] = 2;
                 this.player.x--;
-                this.#moveEnemy();
+                this.player.moves--;
             }
         } else if(keyCode === 39) {
             if (this.#isValidMove(1, 0, this.player)) {
                 this.matrix[this.player.y][this.player.x] = 1;
                 this.matrix[this.player.y][this.player.x + 1] = 2;
                 this.player.x++;
-                this.#moveEnemy();
+                this.player.moves--;
             }
         } else if (keyCode === 38) {
             if (this.#isValidMove(0, -1, this.player)) {
                 this.matrix[this.player.y][this.player.x] = 1;
                 this.matrix[this.player.y - 1][this.player.x] = 2;
                 this.player.y--;
-                this.#moveEnemy();
+                this.player.moves--;
             }
         } else if (keyCode === 40) {
             if (this.#isValidMove(0, 1, this.player)) {
                 this.matrix[this.player.y][this.player.x] = 1;
                 this.matrix[this.player.y + 1][this.player.x] = 2;
                 this.player.y++;
-                this.#moveEnemy();
+                this.player.moves--;
             }
+        }
+        if(this.player.moves === 0){
+            this.#moveEnemy();
+            this.#moveEnemy();
+            this.#moveEnemy();
+            this.#moveEnemy();
+            this.player.moves = 5;
         }
         this.render();
     }
 
     #moveEnemy = () => {
-        const moves = [[1, 0], [0, 1], [-1, 0], [0, -1]];
-        let y = this.enemy.y;
-        let x = this.enemy.x;
-        let playerX = this.player.x;
-        let playerY = this.player.y;
-        let reach = 0;
-        let currReach = 500;
-        let newX = moves[1][0];
-        let newY = moves[1][1];
+        let x = 0;
+        let y = 0;
+        const moves = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+        let reach = 50;
+        let findX = this.player.x; 
+        let myX = this.enemy.x;
+        let specialX = -2;
+        let specialY = -2;
 
+        let findY = this.player.y;
+        let myY = this.enemy.y;
         for(i = 0; i < moves.length; i++) {
-            let currentX = x + moves[i][0];
-            let currentY = y + moves[i][1];
-            let diffX = Math.abs(currentX - playerX);
-            let diffY = Math.abs(currentY - playerY);
-            let currReach = diffX + diffY;
-            let newX = moves[i][0];
-            let newy = moves[i][1];
+            let currX = myX + moves[i][0];
+            let currY = myY + moves[i][1];
 
-            if(currReach > reach && this.#isValidMove(moves[i][0], moves[i][1], this.enemy) ) {
-                currReach = reach;
-                newX = moves[i][0];
-                newY = moves[i][1];
-
+            let thisReach = Math.abs(currX - findX) + Math.abs(currY - findY);
+            if(thisReach < reach && this.#isValidMove(moves[i][0], moves[i][1], this.enemy)) {
+                    reach = thisReach;
+                x = moves[i][0];
+                y = moves[i][1];
             }
+        }   
+        if((this.player.x === this.enemy.x && this.player.y === this.enemy.y + 1) ||
+            (this.player.x === this.enemy.x && this.player.y === this.enemy.y - 1) ||
+            (this.player.x === this.enemy.x + 1 && this.player.y === this.enemy.y) ||
+            (this.player.x === this.enemy.x - 1 && this.player.y === this.enemy.y)) {
+                x = 0;
+                y = 0;
+            }
+
+        if(this.#isValidMove(x, y, this.enemy)){
+            this.matrix[this.enemy.y][this.enemy.x] = 1;
+            this.matrix[this.enemy.y + y][this.enemy.x + x] = 4;
+            this.enemy.y += y;
+            this.enemy.x += x;
         }
-        if (this.#isValidMove(newX, newY, this.enemy)) {
-            this.matrix[this.enemy.x][this.enemy.y] = 1;
-            this.matrix[this.enemy.x + newX][this.enemy.y + newY] = 4;
-            this.enemy.x += newX;
-            this.enemy.y += newY;
-        }
+        this.moved = true;
     }
 
     #getCenter(w, h) {
@@ -153,10 +168,10 @@ class GridSystem {
         }
         this.uiContext.font = "20px Courier";
         this.uiContext.fillStyle = "white";
-        this.uiContext.fillText("Mercenary Mayhem", 730, 30)
+        this.uiContext.fillText("Player Health: " + this.player.health, 730, 30)
         this.uiContext.fillText("Mercenary Mayhem", 50, 550)
-        this.uiContext.fillText("Mercenary Mayhem", 50, 30)
-        this.uiContext.fillText("Mercenary Mayhem", 730, 550)
+        this.uiContext.fillText("Movements Left: " + this.player.moves, 50, 30)
+        this.uiContext.fillText("Enemy Health: " + this.enemy.health, 730, 550)
 
     function wallCheck(node) {
         const river = [[10, 8], [9, 8], [10, 9], 
