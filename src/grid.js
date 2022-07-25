@@ -5,7 +5,7 @@ class GridSystem {
         this.outlineContext = this.#getContext(0, 0, "#444");
         this.topContext = this.#getContext(0, 0, "#111", true);
         this.cellSize = 30;
-        this.padding = 1;
+        this.padding = 5;
 
         this.player = { y: player[1], x: player[0], color: "green"}
         this.matrix[this.player.x][this.player.y] = 2;
@@ -15,7 +15,8 @@ class GridSystem {
         document.addEventListener("keydown", this.#movePlayer)
     }
 
-    #isValidMove(x, y) {
+    #isValidMove = (x, y) => {
+        debugger
         if (this.matrix[this.player.y + y][this.player.x + x] === 1) {
             return true;
         }
@@ -28,29 +29,29 @@ class GridSystem {
                 this.matrix[this.player.y][this.player.x] = 1;
                 this.matrix[this.player.y][this.player.x - 1] = 2;
                 this.player.x--;
+                // this.#moveEnemy();
             }
-            this.#moveEnemy();
         } else if(keyCode === 39) {
             if (this.#isValidMove(1, 0)) {
                 this.matrix[this.player.y][this.player.x] = 1;
                 this.matrix[this.player.y][this.player.x + 1] = 2;
                 this.player.x++;
+                // this.#moveEnemy();
             }
-            this.#moveEnemy();
         } else if (keyCode === 38) {
             if (this.#isValidMove(0, -1)) {
                 this.matrix[this.player.y][this.player.x] = 1;
                 this.matrix[this.player.y - 1][this.player.x] = 2;
                 this.player.y--;
+                // this.#moveEnemy();
             }
-            this.#moveEnemy();
         } else if (keyCode === 40) {
-            if (this.#isValidMove(0, +1)) {
+            if (this.#isValidMove(0, 1)) {
                 this.matrix[this.player.y][this.player.x] = 1;
                 this.matrix[this.player.y + 1][this.player.x] = 2;
                 this.player.y++;
+                // this.#moveEnemy();
             }
-            this.#moveEnemy();
         }
         this.render();
     }
@@ -71,9 +72,9 @@ class GridSystem {
             let currentY = y + moves[i][1];
             let diffX = Math.abs(currentX - playerX);
             let diffY = Math.abs(currentY - playerY);
-            let currReach = diffX + diffY
+            let currReach = diffX + diffY;
 
-            if(currReach > reach) {
+            if(currReach > reach && this.#isValidMove(moves[i][1], moves[i][0], this.enemy) ) {
                 currReach = reach;
                 let newX = moves[i][0];
                 let newY = moves[i][1];
