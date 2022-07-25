@@ -5,7 +5,7 @@ class GridSystem {
         this.outlineContext = this.#getContext(0, 0, "#444");
         this.topContext = this.#getContext(0, 0, "#111", true);
         this.cellSize = 30;
-        this.padding = 5;
+        this.padding = 2;
 
         this.player = { y: player[1], x: player[0], color: "green"}
         this.matrix[this.player.x][this.player.y] = 2;
@@ -15,9 +15,8 @@ class GridSystem {
         document.addEventListener("keydown", this.#movePlayer)
     }
 
-    #isValidMove = (x, y) => {
-        debugger
-        if (this.matrix[this.player.y + y][this.player.x + x] === 1) {
+    #isValidMove = (x, y, player) => {
+        if (this.matrix[player.y + y][player.x + x] === 1) {
             return true;
         }
         return false;
@@ -25,32 +24,32 @@ class GridSystem {
 
     #movePlayer = ( { keyCode } ) => {
         if(keyCode === 37) {
-            if (this.#isValidMove(-1, 0)) {
+            if (this.#isValidMove(-1, 0, this.player)) {
                 this.matrix[this.player.y][this.player.x] = 1;
                 this.matrix[this.player.y][this.player.x - 1] = 2;
                 this.player.x--;
-                // this.#moveEnemy();
+                this.#moveEnemy();
             }
         } else if(keyCode === 39) {
-            if (this.#isValidMove(1, 0)) {
+            if (this.#isValidMove(1, 0, this.player)) {
                 this.matrix[this.player.y][this.player.x] = 1;
                 this.matrix[this.player.y][this.player.x + 1] = 2;
                 this.player.x++;
-                // this.#moveEnemy();
+                this.#moveEnemy();
             }
         } else if (keyCode === 38) {
-            if (this.#isValidMove(0, -1)) {
+            if (this.#isValidMove(0, -1, this.player)) {
                 this.matrix[this.player.y][this.player.x] = 1;
                 this.matrix[this.player.y - 1][this.player.x] = 2;
                 this.player.y--;
-                // this.#moveEnemy();
+                this.#moveEnemy();
             }
         } else if (keyCode === 40) {
-            if (this.#isValidMove(0, 1)) {
+            if (this.#isValidMove(0, 1, this.player)) {
                 this.matrix[this.player.y][this.player.x] = 1;
                 this.matrix[this.player.y + 1][this.player.x] = 2;
                 this.player.y++;
-                // this.#moveEnemy();
+                this.#moveEnemy();
             }
         }
         this.render();
@@ -73,18 +72,22 @@ class GridSystem {
             let diffX = Math.abs(currentX - playerX);
             let diffY = Math.abs(currentY - playerY);
             let currReach = diffX + diffY;
+            let newX = moves[i][0];
+            let newy = moves[i][1];
 
-            if(currReach > reach && this.#isValidMove(moves[i][1], moves[i][0], this.enemy) ) {
+            if(currReach > reach && this.#isValidMove(moves[i][0], moves[i][1], this.enemy) ) {
                 currReach = reach;
-                let newX = moves[i][0];
-                let newY = moves[i][1];
+                newX = moves[i][0];
+                newY = moves[i][1];
+
             }
         }
-
-        this.matrix[this.enemy.x][this.enemy.y] = 1;
-        this.matrix[this.enemy.x + newX][this.enemy.y + newY] = 4;
-        this.enemy.x += newX;
-        this.enemy.y += newY;
+        if (this.#isValidMove(newX, newY, this.enemy)) {
+            this.matrix[this.enemy.x][this.enemy.y] = 1;
+            this.matrix[this.enemy.x + newX][this.enemy.y + newY] = 4;
+            this.enemy.x += newX;
+            this.enemy.y += newY;
+        }
     }
 
     #getCenter(w, h) {
