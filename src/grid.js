@@ -129,7 +129,10 @@ class GridSystem {
         document.body.appendChild(this.canvas);
         return this.context;
     }
+
     render() {
+        debugger;
+        this.clearScreen();
         const w = ((this.cellSize + this.padding) * this.matrix[0].length - (this.padding))
         const h = ((this.cellSize + this.padding) * this.matrix.length - (this.padding))
 
@@ -166,6 +169,7 @@ class GridSystem {
 
             }
         }
+
         this.uiContext.font = "20px Courier";
         this.uiContext.fillStyle = "white";
         this.uiContext.fillText("Player Health: " + this.player.health, 730, 30)
@@ -173,16 +177,21 @@ class GridSystem {
         this.uiContext.fillText("Movements Left: " + this.player.moves, 50, 30)
         this.uiContext.fillText("Enemy Health: " + this.enemy.health, 730, 550)
 
-    function wallCheck(node) {
-        const river = [[10, 8], [9, 8], [10, 9], 
-        [4, 9], [5, 8], [4, 8], 
-        [10, 18], [10, 17], [9, 18],
-        [4, 18], [4, 17], [5, 18]]
-        for(i = 0; i < river.length; i++) {
-            if (node[0] === river[i][0] && node[1] === river[i][1]) return true;
+
+        function wallCheck(node) {
+            const river = [[10, 8], [9, 8], [10, 9], 
+            [4, 9], [5, 8], [4, 8], 
+            [10, 18], [10, 17], [9, 18],
+            [4, 18], [4, 17], [5, 18]]
+            for(i = 0; i < river.length; i++) {
+                if (node[0] === river[i][0] && node[1] === river[i][1]) return true;
+            }
+            return false;
         }
-        return false;
     }
+    clearScreen() {
+        this.uiContext.fillStyle = "black";
+        this.uiContext.fillRect(0,0, this.canvas.width, this.canvas.height);
     }
 }
 
