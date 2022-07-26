@@ -4,22 +4,50 @@ class GridSystem {
         this.uiContext = this.#getContext(1000, 580, "gray");
         this.outlineContext = this.#getContext(0, 0, "#444");
         this.topContext = this.#getContext(0, 0, "#111", true);
-        this.cellSize = 30;
-        this.padding = 2;
+        this.cellSize = 25;
+        this.padding = 1;
 
-        this.player = { y: player[1], x: player[0], color: "green"}
-        this.player.health = 20;
+        this.player2 = { y: 4, x: 2, color: "#6EFF33", value: 5, health: 15,
+            atk: 3, spd: 5, moves: 6, startMoves: 6, name: "Jeff"}
+        this.matrix[this.player2.x][this.player2.y] = 5;
+
+        this.player3 = { y: 2, x: 4, color: "#338642", value: 6, health: 40,
+            atk: 2, spd: 0, moves: 3, startMoves: 3, name: "Boyd"}
+        this.matrix[this.player3.x][this.player3.y] = 6;
+
+        this.player = { y: 3, x: 3, color: "green", value: 2, health: 20, 
+            atk: 4, spd: 2, moves: 4, startMoves: 4, name: "Ike"}
         this.matrix[this.player.x][this.player.y] = 2;
-        this.enemy = {x :23, y :11, color: "red"}
-        this.enemy.health = 20;
-        this.matrix[this.enemy.y][this.enemy.x] = 4;
-        this.player.moves = 5;
 
+
+        this.enemy = {x :23, y :11, color: "red", value: 4, health: 20,
+             atk: 4, spd: 3, moves: 4, name: "Zerg", atk: 5, spd: 4}
+        this.matrix[this.enemy.y][this.enemy.x] = 4;
+
+        this.cursor = { y: 2, x: 2, color: "white" }
+        this.matrix[this.cursor.x][this.cursor.y] = 10
+        this.currPlayer = this.cursor;
+        this.cursor.value = 10;
+        this.allPlayers = [2, 5, 6]
+        this.allEnemies = [4]
+        this.stepOver = 1;
         document.addEventListener("keydown", this.#movePlayer)
+        document.addEventListener("keydown", this.#selectPlayer)
+    }
+
+    #selectPlayer = ( { keyCode } ) => {
+        if (keyCode === 32 && this.allPlayers.includes(this.stepOver)) {
+            this.matrix[this.currPlayer.y][this.currPlayer.x] = 10;
+            this.currPlayer = this.#whichPlayer(this.stepOver)
+            this.stepOver = 1;
+        }
     }
 
     #isValidMove = (x, y, player) => {
-        if (this.matrix[player.y + y][player.x + x] === 1) {
+        if (this.currPlayer === this.cursor && this.matrix[this.currPlayer.y + y][this.currPlayer.x + x] !== 0){
+            return true;
+        } else if (this.matrix[this.currPlayer.y + y][this.currPlayer.x + x] === 1 || 
+            this.matrix[this.currPlayer.y + y][this.currPlayer.x + x] === 10) {
             return true;
         }
         return false;
@@ -27,40 +55,86 @@ class GridSystem {
 
     #movePlayer = ( { keyCode } ) => {
         if(keyCode === 37) {
-            if (this.#isValidMove(-1, 0, this.player)) {
-                this.matrix[this.player.y][this.player.x] = 1;
-                this.matrix[this.player.y][this.player.x - 1] = 2;
-                this.player.x--;
-                this.player.moves--;
+            if (this.#isValidMove(-1, 0, this.currPlayer)) {
+                if (this.currPlayer.moves === this.currPlayer.startMoves) {
+                    this.matrix[this.currPlayer.y][this.currPlayer.x] = 10;
+                }
+                if(this.currPlayer === this.cursor) {
+                    this.matrix[this.currPlayer.y][this.currPlayer.x] = this.stepOver;
+                    this.stepOver = this.matrix[this.currPlayer.y][this.currPlayer.x - 1];
+                    this.matrix[this.currPlayer.y][this.currPlayer.x - 1] = this.currPlayer.value;
+                    this.currPlayer.x--;
+                } else {
+                    if(this.matrix[this.currPlayer.y][this.currPlayer.x] !== 10){
+                        this.matrix[this.currPlayer.y][this.currPlayer.x] = 1;
+                    }
+                    this.matrix[this.currPlayer.y][this.currPlayer.x - 1] = this.currPlayer.value;
+                    this.currPlayer.x--;
+                    this.currPlayer.moves--;
+                }
             }
         } else if(keyCode === 39) {
-            if (this.#isValidMove(1, 0, this.player)) {
-                this.matrix[this.player.y][this.player.x] = 1;
-                this.matrix[this.player.y][this.player.x + 1] = 2;
-                this.player.x++;
-                this.player.moves--;
+            if (this.#isValidMove(1, 0, this.currPlayer)) {
+                if (this.currPlayer.moves === this.currPlayer.startMoves) {
+                    this.matrix[this.currPlayer.y][this.currPlayer.x] = 10;
+                }
+                if (this.currPlayer === this.cursor) {
+                    this.matrix[this.currPlayer.y][this.currPlayer.x] = this.stepOver;
+                    this.stepOver = this.matrix[this.currPlayer.y][this.currPlayer.x + 1];
+                    this.matrix[this.currPlayer.y][this.currPlayer.x + 1] = this.currPlayer.value;
+                    this.currPlayer.x++;
+                } else {
+                    if (this.matrix[this.currPlayer.y][this.currPlayer.x] !== 10) {
+                        this.matrix[this.currPlayer.y][this.currPlayer.x] = 1;
+                    }
+                    this.matrix[this.currPlayer.y][this.currPlayer.x] = 1;
+                    this.matrix[this.currPlayer.y][this.currPlayer.x + 1] = this.currPlayer.value;
+                    this.currPlayer.x++;
+                    this.currPlayer.moves--;
+                }
             }
         } else if (keyCode === 38) {
-            if (this.#isValidMove(0, -1, this.player)) {
-                this.matrix[this.player.y][this.player.x] = 1;
-                this.matrix[this.player.y - 1][this.player.x] = 2;
-                this.player.y--;
-                this.player.moves--;
+            if (this.#isValidMove(0, -1, this.currPlayer)) {
+                if (this.currPlayer.moves === this.currPlayer.startMoves) {
+                    this.matrix[this.currPlayer.y][this.currPlayer.x] = 10;
+                }
+                if (this.currPlayer === this.cursor) {
+                    this.matrix[this.currPlayer.y][this.currPlayer.x] = this.stepOver;
+                    this.stepOver = this.matrix[this.currPlayer.y - 1][this.currPlayer.x];
+                    this.matrix[this.currPlayer.y - 1][this.currPlayer.x] = this.currPlayer.value;
+                    this.currPlayer.y--;
+                } else {
+                    this.matrix[this.currPlayer.y][this.currPlayer.x] = 1;
+                    this.matrix[this.currPlayer.y - 1][this.currPlayer.x] = this.currPlayer.value;
+                    this.currPlayer.y--;
+                    this.currPlayer.moves--;
+                }
             }
         } else if (keyCode === 40) {
-            if (this.#isValidMove(0, 1, this.player)) {
-                this.matrix[this.player.y][this.player.x] = 1;
-                this.matrix[this.player.y + 1][this.player.x] = 2;
-                this.player.y++;
-                this.player.moves--;
+            if (this.#isValidMove(0, 1, this.currPlayer)) {
+                if (this.currPlayer.moves === this.currPlayer.startMoves) {
+                    this.matrix[this.currPlayer.y][this.currPlayer.x] = 10;
+                }
+                if (this.currPlayer === this.cursor) {
+                    this.matrix[this.currPlayer.y][this.currPlayer.x] = this.stepOver;
+                    this.stepOver = this.matrix[this.currPlayer.y + 1][this.currPlayer.x];
+                    this.matrix[this.currPlayer.y + 1][this.currPlayer.x] = this.currPlayer.value;
+                    this.currPlayer.y++;
+                } else {
+                    this.matrix[this.currPlayer.y][this.currPlayer.x] = 1;
+                    this.matrix[this.currPlayer.y + 1][this.currPlayer.x] = this.currPlayer.value;
+                    this.currPlayer.y++;
+                    this.currPlayer.moves--;
+                }
             }
         }
-        if(this.player.moves === 0){
+        if(this.currPlayer.moves === 0){
             this.#moveEnemy();
             this.#moveEnemy();
             this.#moveEnemy();
             this.#moveEnemy();
-            this.player.moves = 5;
+            this.currPlayer.moves = this.currPlayer.startMoves;
+            this.currPlayer = this.cursor;
         }
         this.render();
     }
@@ -131,7 +205,6 @@ class GridSystem {
     }
 
     render() {
-        debugger;
         this.clearScreen();
         const w = ((this.cellSize + this.padding) * this.matrix[0].length - (this.padding))
         const h = ((this.cellSize + this.padding) * this.matrix.length - (this.padding))
@@ -149,8 +222,14 @@ class GridSystem {
             for (let col = 0; col < this.matrix[row].length; col++){
                 let currentNode = [row, col];
                 let color = "orange";
-                if (this.matrix[row][col] === 0){
+                if (this.matrix[row][col] === 10) {
+                color = this.cursor.color;
+                } else if (this.matrix[row][col] === 0){
                     color = "black";
+                } else if(this.matrix[row][col] === 5) {
+                    color = this.player2.color;
+                } else if (this.matrix[row][col] === 6) {
+                    color = this.player3.color;
                 } else if (row < 9 && row > 5 && col < 17 && col > 9) {
                     color = "blue";
                     this.matrix[row][col] = 3; 
@@ -160,7 +239,7 @@ class GridSystem {
                 } else if(this.matrix[row][col] === 2) {
                     color = this.player.color;
                 } else if(this.matrix[row][col] === 4) {
-                    color = this.enemy.color
+                    color = this.enemy.color;
                 }
                 this.outlineContext.fillStyle = color;
                 this.outlineContext.fillRect(col * (this.cellSize + this.padding),
@@ -169,13 +248,27 @@ class GridSystem {
 
             }
         }
-
         this.uiContext.font = "20px Courier";
         this.uiContext.fillStyle = "white";
-        this.uiContext.fillText("Player Health: " + this.player.health, 730, 30)
-        this.uiContext.fillText("Mercenary Mayhem", 50, 550)
-        this.uiContext.fillText("Movements Left: " + this.player.moves, 50, 30)
-        this.uiContext.fillText("Enemy Health: " + this.enemy.health, 730, 550)
+        if (this.currPlayer === this.cursor && this.#whichPlayer(this.stepOver)) {
+            let showPlayer = this.#whichPlayer(this.stepOver)
+            this.uiContext.fillText("Player Health: " + showPlayer.health, 730, 30)
+            this.uiContext.fillText("Mercenary Mayhem", 50, 550)
+            this.uiContext.fillText("Movements Left: " + showPlayer.moves, 50, 30)
+            this.uiContext.fillText(showPlayer.name + "  stats- " + "Atk: " + showPlayer.atk + " " + "Spd: " + showPlayer.spd, 670, 550)
+        } else if (this.allEnemies.includes(this.stepOver)) {
+            let showEnemy = this.#whichEnemy(this.stepOver)
+            this.uiContext.fillText("Enemy Health: " + showEnemy.health, 730, 30)
+            this.uiContext.fillText("Mercenary Mayhem", 50, 550)
+            this.uiContext.fillText("Movements Left: " + showEnemy.moves, 50, 30)
+            this.uiContext.fillText(showEnemy.name + "  stats- " + "Atk: " + showEnemy.atk + " " + "Spd: " + showEnemy.spd, 670, 550)
+        } else {
+            this.uiContext.fillText("Player Health: " + this.player.health, 730, 30)
+            this.uiContext.fillText("Mercenary Mayhem", 50, 550)
+            this.uiContext.fillText("Movements Left: " + this.player.moves, 50, 30)
+            this.uiContext.fillText("Enemy Health: " + this.enemy.health, 730, 550)
+        }
+        this.uiContext.clearRect(0, 0, this.uiContext.height, this.uiContext.width)
 
 
         function wallCheck(node) {
@@ -193,6 +286,22 @@ class GridSystem {
         this.uiContext.fillStyle = "black";
         this.uiContext.fillRect(0,0, this.canvas.width, this.canvas.height);
     }
+
+    #whichPlayer(n) {
+        if (n === 2) {
+            return this.player;
+        } else if (n === 5) {
+            return this.player3;
+        } else if (n === 6) {
+            return this.player2;
+        }
+        return false;
+    }
+    #whichEnemy(n) {
+        if (n === 4) {
+            return this.enemy;
+        }
+    }
 }
 
 
@@ -201,7 +310,7 @@ function createMatrix(x, y) {
     for(i = 0; i < x; i++) {
         arr2d[i] = new Array(y);
         for(j = 0; j < y; j++) {
-            if(i === 0 || j === 0 || i === 14 || j === 26) {
+            if(i === 0 || j === 0 || i === x - 1 || j === y - 1) {
                 arr2d[i][j] = 0
             } else{ 
                 arr2d[i][j] = 1
@@ -210,8 +319,7 @@ function createMatrix(x, y) {
     }
     return arr2d;
 }
-const player1 = [3, 3]
 const matrix = createMatrix(15, 27);
-const grid = new GridSystem(matrix, player1);    
+const grid = new GridSystem(matrix);    
 
 grid.render();

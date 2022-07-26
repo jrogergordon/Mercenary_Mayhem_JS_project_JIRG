@@ -1,1 +1,1 @@
-{"version":3,"file":"main.css","mappings":"AAAA,KACI,uB","sources":["webpack://my_js_game/./src/index.scss"],"sourcesContent":["body {\r\n    background-color: green;\r\n}"],"names":[],"sourceRoot":""}
+{"version":3,"file":"main.css","mappings":"AAAA,KACI,sB","sources":["webpack://my_js_game/./src/index.scss"],"sourcesContent":["body {\r\n    background-color: yellow;\r\n}"],"names":[],"sourceRoot":""}
