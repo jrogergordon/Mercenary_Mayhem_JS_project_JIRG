@@ -1,7 +1,22 @@
+import dungeon from "./assets/dungeon_floor.png"
+import column from "./assets/column.png"
+import water from "./assets/water.png"
+import waterCursor from "./assets/cursorWater.png"
+import floorCursor from "./assets/dungeonFloorCursor.png"
+import topColumn from "./assets/topColumn.png"
+import topColumnCursor from "./assets/topColumnCursor.png"
+import bottomColumnCursor from "./assets/bottonColumnCursor.png"
+import knight from "./assets/knight1.png"
+import knightCursor from "./assets/knightCursor.png"
+import enemy from "./assets/enemy.png"
+import enemyCursor from "./assets/cursorEnemy.png"
+import endWall from "./assets/endWall.png"
+import king from "./assets/king.png"
+import kingCursor from "./assets/kingCursor.png"
 class GridSystem {
-    constructor(matrix, player) {
+    constructor(matrix) {
         this.matrix = matrix;
-        this.uiContext = this.#getContext(1000, 580, "purple");
+        this.uiContext = this.#getContext(1000, 580, "#99D0F2");
         this.outlineContext = this.#getContext(0, 0, "#444");
         this.topContext = this.#getContext(0, 0, "#111", true);
         this.cellSize = 25;
@@ -10,52 +25,52 @@ class GridSystem {
         this.gameOver = false;
         this.moves = [[1, 0], [-1, 0], [0, 1], [0, -1]];
 
-        this.player2 = {y: 4, x: 2, color: "#338642", value: 6, health: 20,
-            atk: 3, spd: 5, moves: 6, startMoves: 6, name: "Jeff, the tepid"}
+        this.player2 = {y: 4, x: 2, color: "#338642", value: 1, health: 20,
+            atk: 3, spd: 5, moves: 6, startMoves: 6, name: "Jeff, the tepid", sayings: []}
         this.matrix[this.player2.x][this.player2.y] = 5;
         this.player2.sayings = [
-            "I am Jeff, the Tepid",
-            "Hi there",
-            "Scary place",
-            "I prefer my coffee tepid",
-            "No iced tea for me",
-            "Battle isn't quite tepid",
-            "Tepid: 'only slightly warm'",
-            "Some like it tepid",
-            "I'm not fond of the heat",
-            "I'm not fond of the cold",
-            "How did I get this job",
-            "Not really a fighter"
+            ["I am Jeff, the Tepid", 640],
+            ["Hi there", 830],
+            ["Scary place", 780],
+            ["I prefer my coffee tepid", 570],
+            ["No iced tea for me", 680],
+            ["Battle isn't quite tepid", 590],
+            ["Tepid: 'only slightly warm'", 550],
+            ["Some like it tepid", 680],
+            ["I'm not fond of the heat", 570],
+            ["I'm not fond of the cold", 570],
+            ["How did I get this job", 600],
+            ["Not really a fighter", 640]
         ]
 
         this.player3 = { y: 2, x: 4, color: "#338642", value: 5, health: 20,
             atk: 3, spd: 0, moves: 6, startMoves: 6, name: "Boyd, Stalwart Protector"}
-        this.matrix[this.player3.x][this.player3.y] = 6;
+        this.matrix[this.player3.x][this.player3.y] = 1;
         this.player3.sayings = [
-            "I am Boyd, hello",
-            "For the King!",
-            "I shall protect his Majesty!",
-            "It is my greatest honor",
-            "I shall protect",
-            "Just as my father before me!",
-            "To protect is holy",
-            "With this shield",
-            "With my sword",
-            "I shall strike you!",
-            "Do not approach!",
-            "Get behind me!"
+            ["I am Boyd, hello", 700],
+            ["For the King!", 760],
+            ["I shall protect his Majesty!", 520],
+            ["It is my greatest honor", 600],
+            ["I shall protect", 710],
+            ["Just as my father before me!", 520],
+            ["To protect is holy", 680],
+            ["With this shield", 700],
+            ["With my sword", 740],
+            ["I shall strike you!", 670],
+            ["Do not approach!", 700],  
+            ["Get behind me!", 740]
         ]
 
         this.player = {y: 3, x: 3, color: "#3D7EC7", value: 2, health: 5, 
             atk: 1, spd: 2, moves: 6, startMoves: 6, name: "The King"}
         this.matrix[this.player.x][this.player.y] = 2;
         this.player.sayings = [
-            "Does anyone have grapes?",
-            "I'm rather hungry",
-            "I suppose there's danger",
-            "Not even a litle scared",
-            "If only I had a gun",
-            "Is that a chair?"
+            ["Does anyone have grapes?", 570],
+            ["I'm rather hungry", 690],
+            ["I suppose there's danger", 570],
+            ["Not even a litle scared", 570],
+            ["If only I had a gun", 650],
+            ["Is that a chair?", 690]
         ]
 
 
@@ -63,13 +78,12 @@ class GridSystem {
              atk: 4, spd: 3, moves: 4, name: "Petrine, the Firebrand", atk: 5, spd: 4}
         this.matrix[this.enemy.y][this.enemy.x] = 4;
         this.enemy.sayings = [
-            "Ready to Rumble",
-            "I'm coming for you",
-            "Fierce is the Fire",
-            "Watch for the flames",
-            "Is it hot or just me?",
-            "Be careful, you'll burn",
-            ""
+            ["Ready to Rumble", 720],
+            ["I'm coming for you", 650],
+            ["Fierce is the Fire", 650],
+            ["Watch for the flames", 600],
+            ["Is it hot or just me?", 590],
+            ["Be careful, you'll burn", 570],
         ]
 
         this.cursor = { y: 2, x: 2, color: "white", value: 10 }
@@ -86,71 +100,73 @@ class GridSystem {
   
 
         this.water = [
-            "This tile is water",
-            "Are you thirsty?",
-            "It's just water",
-            "Splish splash",
-            "Water is for winners",
-            "You cannot drink this",
-            "Thirst quenching",
-            "Water, it looks funny",
-            "Don't look at the water!",
-            "Do NOT drink",
-            "Your reflection is pretty!",
-            "You like Jazz?",
-            "So reflective",
-            "Like the sea but not",
-            "Don't bathe here",
-            "Forget the Water, fight",
-            "You could Drown a man here",
-            "Water-reminds me of liquid",
-            "Water, spelled 'W-a-t-e-r'",
-            "We all float down here",
-            "Smooth like water",
-            "Go ahead, drink",
-            "I never liked water",
-            "Is this an easter egg?"
+            ["Be careful, you'll drown", 570],
+            ["This tile is water", 650],
+            ["Are you thirsty?", 710],
+            ["It's just water", 720],
+            ["Splish splash", 730],
+            ["Water is for winners", 620],
+            ["You cannot drink this", 600],
+            ["Thirst quenching", 700],
+            ["Water, it looks funny", 610],
+            ["Don't look at the water!", 570],
+            ["Do NOT drink", 730],
+            ["Your reflection is pretty!", 550],
+            ["You like Jazz?", 740],
+            ["So reflective", 740],
+            ["Like the sea but not", 600],
+            ["Don't bathe here", 720],
+            ["Forget the Water, fight", 570],
+            ["You could Drown a man here", 550],
+            ["Water-reminds me of liquid", 550],
+            ["Water, spelled 'W-a-t-e-r'", 550],
+            ["We all float down here", 610],
+            ["Smooth like water", 700],
+            ["Go ahead, drink", 700],
+            ["I never liked water", 660],
+            ["Is this an easter egg?", 610]
         ]
         this.stone = [
-            "This tile is stone",
-            "Be wary: stone pillar here",
-            "Looks Grecian",
-            "Stone, almost crumbling",
-            "Stone pillar, looks mighty",
-            "Stone pillar, looks gaudy",
-            "Big stone",
-            "Stone pillar: danger",
-            "Don't touch the Stone",
-            "Do NOT eat",
-            "You like Jazz?",
-            "Smooth like water",
-            "Small stone",
-            "Stones are out of shape",
-            "Stones",
-            "Is this an easter egg?"
+            ["This tile is stone", 650],
+            ["Be wary: stone pillar here", 550],
+            ["Looks Grecian", 730],
+            ["Stone, almost crumbling", 570],
+            ["Stone pillar, looks mighty", 550],
+            ["Stone pillar, looks gaudy", 550],
+            ["Big stone", 830],
+            ["Stone pillar: danger", 630],
+            ["Don't touch the Stone", 630],
+            ["Do NOT eat", 830]
+            ["You like Jazz?", 800],
+            ["Smooth like water", 630],
+            ["Small stone", 830],
+            ["Stones are out of shape", 550],
+            ["Stones", 880],
+            ["Is this an easter egg?", 550]
         ]
         this.tile = [
-            "TILES ROCK MY WORLD",
-            "I LOVE TILES A LOT!",
-            "INTERIOR DESIGN!!!",
-            "TILE TILE TILE TILE",
-            "Just like HGTV- tileee!",
-            "Tiles are so cool!",
-            "I wish I was a tile",
-            "If only I were a tile",
-            "All I know is tile",
-            "Good place to sleep",
-            "You like Jazz?",
-            "NOT a restroom",
-            "Tile, not Textile",
-            "Tile, yellow in color",
-            "Smooth like water",
-            "Ooh! A pebble!",
-            "What a boring line",
-            "I like game design",
-            "A cracked tile",
-            "Is this an easter egg?"
+            ["TILES ROCK MY WORLD", 630],
+            ["I LOVE TILES A LOT!", 630],
+            ["INTERIOR DESIGN!!!", 635],
+            ["TILE TILE TILE TILE", 635],
+            ["Just like HGTV- tileee!", 610],
+            ["Tiles are so cool!", 635],
+            ["I wish I was a tile", 635],
+            ["If only I were a tile", 620],
+            ["All I know is tile", 635],
+            ["Good place to sleep", 635],
+            ["You like Jazz?", 750],
+            ["NOT a restroom", 750],
+            ["Tile, not Textile", 650],
+            ["Tile, yellow in color", 620],
+            ["Smooth like water", 650],
+            ["Ooh! A pebble!", 750],
+            ["What a boring line", 650],
+            ["I like game design", 650],
+            ["A cracked tile", 750],
+            ["Is this an easter egg?", 620]
         ]
+        this.render();
     }
 
     #selectPlayer = ( { keyCode } ) => {
@@ -272,6 +288,9 @@ class GridSystem {
             this.#moveEnemy();
             this.#moveEnemy();
             this.#moveEnemy();
+            if(this.#fightPlayer() === true) {
+                this.player.health = 0;
+            }
             holder.moves = holder.startMoves;
             this.currPlayer = this.cursor;
             this.stepOver = 1;
@@ -290,7 +309,7 @@ class GridSystem {
 
         let findY = this.player.y;
         let myY = this.enemy.y;
-        for(i = 0; i < this.moves.length; i++) {
+        for(let i = 0; i < this.moves.length; i++) {
             let currX = myX + this.moves[i][0];
             let currY = myY + this.moves[i][1];
 
@@ -327,9 +346,18 @@ class GridSystem {
             (player.x === this.enemy.x - 1 && player.y === this.enemy.y)) {
                 fight = true
             }
-        if(fight === true){ 
-            return true;
+        return fight
+    }
+
+    #fightPlayer() {
+        let fight = false;
+        if ((this.enemy.x === this.player.x && this.enemy.y === this.player.y + 1) ||
+            (this.enemy.x === this.player.x && this.enemy.y === this.player.y - 1) ||
+            (this.enemy.x === this.player.x + 1 && this.enemy.y === this.player.y) ||
+            (this.enemy.x === this.player.x - 1 && this.enemy.y === this.player.y)) {
+            fight = true
         }
+        return fight
     }
 
     #getCenter(w, h) {
@@ -374,91 +402,127 @@ class GridSystem {
         for(let row = 0; row < this.matrix.length; row++){
             for (let col = 0; col < this.matrix[row].length; col++){
                 let currentNode = [row, col];
-                let color = "#F27D52";
+                const image = new Image();
+                image.src = dungeon;
                 if (this.matrix[row][col] === 10) {
-                color = this.cursor.color;
+                    if (this.stepOver === 3) {
+                        image.src = waterCursor;
+                    } else if (this.stepOver === 1){
+                        image.src = floorCursor;
+                    } else if (this.stepOver === 8) {
+                        image.src = topColumnCursor;
+                    } else if (this.stepOver === 7) {
+                        image.src = bottomColumnCursor;
+                    } else if (this.stepOver === 5) {
+                        image.src = knightCursor;
+                    } else if (this.stepOver === 4) {
+                        image.src = enemyCursor;
+                    } else if (this.stepOver === 2) {
+                        image.src = kingCursor;
+                    }
                 } else if (this.matrix[row][col] === 0){
-                    color = "#023E73";
+                    image.src = endWall;
                 } else if(this.matrix[row][col] === 5) {
-                    color = this.player2.color;
+                    image.src = knight;
                 } else if (this.matrix[row][col] === 6) {
-                    color = this.player3.color;
+            
                 } else if (row < 9 && row > 5 && col < 17 && col > 9) {
-                    color = "blue";
+                    image.src = water;
                     this.matrix[row][col] = 3; 
                 } else if (wallCheck(currentNode)) {
-                    color = "gray";
-                    this.matrix[row][col] = 7; 
+                    image.src = column;
+                    if (topWallCheck(currentNode)){
+                        image.src = topColumn;
+                        this.matrix[row][col] = 8; 
+                    } else{
+                        this.matrix[row][col] = 7; 
+                    }
                 } else if(this.matrix[row][col] === 2) {
-                    color = this.player.color;
+                    image.src = king;
                 } else if(this.matrix[row][col] === 4) {
-                    color = this.enemy.color;
+                    image.src = enemy;
                 }
-                this.outlineContext.fillStyle = color;
-                this.outlineContext.fillRect(col * (this.cellSize + this.padding),
-                row * (this.cellSize + this.padding),
-                this.cellSize, this.cellSize);
+                // this.outlineContext.fillStyle = color;
+                // this.outlineContext.fillRect(col * (this.cellSize + this.padding),
+                // row * (this.cellSize + this.padding),
+                // this.cellSize, this.cellSize);
+                this.outlineContext.drawImage(image, col * (this.cellSize + this.padding), row * (this.cellSize + this.padding))
 
             }
         }
         this.uiContext.clearRect(0, 0, 50000, 50000)
-        this.uiContext.font = "20px Courier";
-        this.uiContext.fillStyle = "white";
+        this.uiContext.fillStyle = "black";
+        this.uiContext.font = "italic 20pt Courier"
         if (this.enemy.health <= 0 && this.player.health <= 0) {
-            this.uiContext.fillText("A Tie", 730, 30)
-            this.uiContext.fillText("The King is Dead", 50, 550)
-            this.uiContext.fillText("Press R to Restart", 50, 30)
-            this.uiContext.fillText("FIX FONTPetrine is Dead", 670, 550)
+            this.uiContext.fillText("A Tie", 730, 30);
+            this.uiContext.fillText("The King is Dead", 50, 550);
+            this.uiContext.fillText("Press R to Restart", 50, 30);
+            this.uiContext.fillText("Petrine is Dead", 670, 550);
         } else if (this.enemy.health <= 0) {
-            this.uiContext.fillText("FIX FONTYou Win", 730, 30)
-            this.uiContext.fillText("Petrine is Slain", 50, 550)
-            this.uiContext.fillText("Press R to Restart", 50, 30)
-            this.uiContext.fillText("You Win", 670, 550)
+            this.uiContext.fillText("You Win", 730, 30);
+            this.uiContext.fillText("Petrine is Slain", 50, 550);
+            this.uiContext.fillText("Press R to Restart", 50, 30);
+            this.uiContext.fillText("You Win", 670, 550);
         } else if (this.player.health <= 0 ) {
-            this.uiContext.fillText("You Lose", 730, 30)
-            this.uiContext.fillText("The King is Dead", 50, 550)
-            this.uiContext.fillText("Press R to Restart", 50, 30)
-            this.uiContext.fillText("FIX FONTYou Lose", 670, 550)
+            this.uiContext.fillText("You Lose", 730, 30);
+            this.uiContext.fillText("The King is Dead", 50, 550);
+            this.uiContext.fillText("Press R to Restart", 50, 30);
+            this.uiContext.fillText("You Lose", 670, 550);
         } else if (this.#whichPlayer(this.stepOver)) {
-            let showPlayer = this.#whichPlayer(this.stepOver)
-            this.uiContext.fillText("FIX FONTHealth: " + showPlayer.health + ", Attack: " + showPlayer.atk, 730, 30)
-            this.uiContext.fillText(showPlayer.name, 50, 550)
-            this.uiContext.fillText("Movements Left: " + showPlayer.moves, 50, 30)
-            this.uiContext.fillText(showPlayer.sayings[Math.floor(Math.random() * showPlayer.sayings.length)], 670, 550)
+            let showPlayer = this.#whichPlayer(this.stepOver);
+            let n = Math.floor(Math.random() * showPlayer.sayings.length);
+            this.uiContext.fillText("Health: " + showPlayer.health + ", Attack: " + showPlayer.atk, 620, 30);
+            this.uiContext.fillText(showPlayer.name, 50, 550);
+            this.uiContext.fillText("Movements Left: " + showPlayer.moves, 50, 30);
+            this.uiContext.fillText(showPlayer.sayings[n][0], showPlayer.sayings[n][1], 550);
         } else if (this.allEnemies.includes(this.stepOver)) {
             let showEnemy = this.#whichEnemy(this.stepOver)
-            this.uiContext.fillText("HP: " + showEnemy.health + ", Attack " + showEnemy.atk, 730, 30)
-            this.uiContext.fillText(showEnemy.name, 50, 550)
-            this.uiContext.fillText("MV: " + showEnemy.moves, 50, 30)
-            this.uiContext.fillText(showEnemy.sayings[Math.floor(Math.random() * showEnemy.sayings.length)], 670, 550)
+            let n = Math.floor(Math.random() * showEnemy.sayings.length);
+            this.uiContext.fillText("HP: " + showEnemy.health + ", Attack " + showEnemy.atk, 620, 30);
+            this.uiContext.fillText(showEnemy.name, 50, 550);
+            this.uiContext.fillText("MV: " + showEnemy.moves, 50, 30);
+            this.uiContext.fillText(showEnemy.sayings[n][0], showEnemy.sayings[n][1], 550);
         } else if(this.stepOver === 3) {
+            let n = Math.floor(Math.random() * this.water.length);
         // this.uiContext.clearRect(0, 0, this.width, this.height)
-        this.uiContext.fillText("A Water Tile", 730, 30)
-        this.uiContext.fillText("Players Cannot be Moved Here", 50, 550)
-        this.uiContext.fillText("A Water Tile", 50, 30)
-        this.uiContext.fillText(this.water[Math.floor(Math.random() * this.water.length)], 670, 550)
-        } else if(this.stepOver === 7) {
+        this.uiContext.fillText("A Water Tile", 730, 30);
+        this.uiContext.fillText("Players Cannot be Moved Here", 50, 550);
+        this.uiContext.fillText("A Water Tile", 50, 30);
+            this.uiContext.fillText(this.water[n][0], this.water[n][1], 550);
+        } else if (this.stepOver === 7 || this.stepOver === 8) {
+        let n = Math.floor(Math.random() * this.stone.length);
         // this.uiContext.clearRect(0, 0, this.width, this.height)
-        this.uiContext.fillText("A Stone Column", 730, 30)
-        this.uiContext.fillText("Players Cannot be Moved Here", 50, 550)
-        this.uiContext.fillText("A Stone Column", 50, 30)
-        this.uiContext.fillText(this.stone[Math.floor(Math.random() * this.stone.length)], 670, 550)
+        this.uiContext.fillText("A Stone Column", 730, 30);
+        this.uiContext.fillText("Players Cannot be Moved Here", 50, 550);
+        this.uiContext.fillText("A Stone Column", 50, 30);
+        this.uiContext.fillText(this.stone[n][0], this.stone[n][1], 550);
         } else if (this.stepOver === 1) {
+            let n = Math.floor(Math.random() * this.tile.length);
             // this.uiContext.clearRect(0, 0, this.width, this.height)
-            this.uiContext.fillText("A Tile", 730, 30)
-            this.uiContext.fillText("Players move along these", 50, 550)
-            this.uiContext.fillText("A Tile", 50, 30)
-            this.uiContext.fillText(this.tile[Math.floor(Math.random() * this.tile.length)], 670, 550)
+            this.uiContext.fillText("A Tile", 730, 30);
+            this.uiContext.fillText("Players move along these", 50, 550);
+            this.uiContext.fillText("A Tile", 50, 30);
+            this.uiContext.fillText(this.tile[n][0], this.tile[n][1], 550);
         }
 
-
+        function topWallCheck(node) {
+            const topWall = [[4, 8], [9, 18], [4, 18], [9, 8]];
+            for (let i = 0; i < topWall.length; i++) {
+                if (topWall[i][0] === node[0] && topWall[i][1] === node[1]) {
+                    return true;
+                }
+            }
+            return false;
+        }
         function wallCheck(node) {
-            const river = [[10, 8], [9, 8], [10, 9], 
+            const cols = [[10, 8], [9, 8], [10, 9], 
             [4, 9], [5, 8], [4, 8], 
             [10, 18], [10, 17], [9, 18],
             [4, 18], [4, 17], [5, 18]]
-            for(i = 0; i < river.length; i++) {
-                if (node[0] === river[i][0] && node[1] === river[i][1]) return true;
+            for(let i = 0; i < cols.length; i++){
+                if(cols[i][0] === node[0] && cols[i][1] === node[1]){
+                    return true;
+                } 
             }
             return false;
         }
@@ -486,156 +550,46 @@ class GridSystem {
 
     #restart = ({ keyCode }) => {
         if(keyCode === 82){
+      
         this.matrix[this.player2.y][this.player2.x] = 1;
         this.player2 = {
             y: 4, x: 2, color: "#338642", value: 6, health: 20,
-            atk: 3, spd: 5, moves: 6, startMoves: 6, name: "Jeff, the tepid"
+            atk: 3, spd: 5, moves: 6, startMoves: 6, name: "Jeff, the tepid",
+            sayings: this.player2.sayings
         }
-        this.matrix[this.player2.y][this.player2.x] = 6;
-        this.player2.sayings = [
-            "I am Jeff, the Tepid",
-            "Hi there",
-            "Scary place",
-            "I prefer my coffee tepid",
-            "No iced tea for me",
-            "Battle isn't quite tepid",
-            "Tepid: 'only slightly warm'",
-            "Some like it tepid",
-            "I'm not fond of the heat",
-            "I'm not fond of the cold",
-            "How did I get this job",
-            "Not really a fighter"
-        ]
         this.matrix[this.player2.y][this.player2.x] = 1;
+            
+        this.matrix[this.player3.y][this.player3.x] = 1;
         this.player3 = {
             y: 2, x: 4, color: "#338642", value: 5, health: 20,
-            atk: 3, spd: 0, moves: 6, startMoves: 6, name: "Boyd, Stalwart Protector"
+            atk: 3, spd: 0, moves: 6, startMoves: 6, name: "Boyd, Stalwart Protector",
+            sayings: this.player3.sayings
         }
-        this.matrix[this.player3.y][this.player3.x] = 6;
-        this.player3.sayings = [
-            "I am Boyd, hello",
-            "For the King!",
-            "I shall protect his Majesty!",
-            "It is my greatest honor",
-            "I shall protect",
-            "Just as my father before me!",
-            "To protect is holy",
-            "With this shield",
-            "With my sword",
-            "I shall strike you!",
-            "Do not approach!",
-            "Get behind me!"
-        ]
+        this.matrix[this.player3.y][this.player3.x] = 5;
+
         this.matrix[this.player.y][this.player.x] = 1;
         this.player = {
             y: 3, x: 3, color: "#3D7EC7", value: 2, health: 5,
-            atk: 1, spd: 2, moves: 6, startMoves: 6, name: "The King"
+            atk: 1, spd: 2, moves: 6, startMoves: 6, name: "The King",
+            sayings: this.player.sayings
         }
         this.matrix[this.player.x][this.player.y] = 2;
-        this.player.sayings = [
-            "Does anyone have grapes?",
-            "I'm rather hungry",
-            "I suppose there's danger",
-            "Not even a litle scared",
-            "If only I had a gun",
-            "Is that a chair?"
-        ]
 
         this.matrix[this.enemy.y][this.enemy.x] = 1;
         this.enemy = {
             x: 23, y: 11, color: "red", value: 4, health: 40,
-            atk: 4, spd: 3, moves: 4, name: "Petrine, the Firebrand", atk: 5, spd: 4
+            atk: 4, spd: 3, moves: 4, name: "Petrine, the Firebrand", atk: 5, spd: 4,
+            sayings: this.enemy.sayings
         }
         this.matrix[this.enemy.y][this.enemy.x] = 4;
-        this.enemy.sayings = [
-            "Ready to Rumble",
-            "I'm coming for you",
-            "Fierce is the Fire",
-            "Watch for the flames",
-            "Is it hot or just me?",
-            "Be careful, you'll burn",
-            "The fiery kiss of death"
-        ]
+
+
         this.matrix[this.cursor.y][this.cursor.x] = 1;
-        this.cursor = { y: 2, x: 2, color: "white", value: 10 }
+            this.cursor = { y: 2, x: 2, color: "white", value: 10 }
         this.matrix[this.cursor.y][this.cursor.x] = 10
+
         this.currPlayer = this.cursor;
         this.stepOver = 1;
-
-        this.allPlayers = [2, 5, 6]
-        this.allEnemies = [4]
-
-        document.addEventListener("keydown", this.#movePlayer)
-        document.addEventListener("keydown", this.#selectPlayer)
-        document.addEventListener("keydown", this.#restart)
-
-
-        this.water = [
-            "This tile is water",
-            "Are you thirsty?",
-            "It's just water",
-            "Splish splash",
-            "Water is for winners",
-            "You cannot drink this",
-            "Thirst quenching",
-            "Water, it looks funny",
-            "Don't look at the water!",
-            "Do NOT drink",
-            "Your reflection is pretty!",
-            "You like Jazz?",
-            "So reflective",
-            "Like the sea but not",
-            "Don't bathe here",
-            "Forget the Water, fight",
-            "You could Drown a man here",
-            "Water-reminds me of liquid",
-            "Water, spelled 'W-a-t-e-r'",
-            "We all float down here",
-            "Smooth like water",
-            "Go ahead, drink",
-            "I never liked water",
-            "Is this an easter egg?"
-        ]
-        this.stone = [
-            "This tile is stone",
-            "Be wary: stone pillar here",
-            "Looks Grecian",
-            "Stone, almost crumbling",
-            "Stone pillar, looks mighty",
-            "Stone pillar, looks gaudy",
-            "Big stone",
-            "Stone pillar: danger",
-            "Don't touch the Stone",
-            "Do NOT eat",
-            "You like Jazz?",
-            "Smooth like water",
-            "Small stone",
-            "Stones are out of shape",
-            "Stones",
-            "Is this an easter egg?"
-        ]
-        this.tile = [
-            "TILES ROCK MY WORLD",
-            "I LOVE TILES A LOT!",
-            "INTERIOR DESIGN!!!",
-            "TILE TILE TILE TILE",
-            "Just like HGTV- tileee!",
-            "Tiles are so cool!",
-            "I wish I was a tile",
-            "If only I were a tile",
-            "All I know is tile",
-            "Good place to sleep",
-            "You like Jazz?",
-            "NOT a restroom",
-            "Tile, not Textile",
-            "Tile, yellow in color",
-            "Smooth like water",
-            "Ooh! A pebble!",
-            "What a boring line",
-            "I like game design",
-            "A cracked tile",
-            "Is this an easter egg?"
-        ]
     }
     }
 
@@ -647,21 +601,23 @@ class GridSystem {
 }
 
 
-function createMatrix(x, y) { 
-    let arr2d = new Array(x)
-    for(i = 0; i < x; i++) {
-        arr2d[i] = new Array(y);
-        for(j = 0; j < y; j++) {
-            if(i === 0 || j === 0 || i === x - 1 || j === y - 1) {
-                arr2d[i][j] = 0
-            } else{ 
-                arr2d[i][j] = 1
-            }
-        }
-    }
-    return arr2d;
-}
-const matrix = createMatrix(15, 27);
-const grid = new GridSystem(matrix);    
+// function createMatrix(x, y) { 
+//     let arr2d = new Array(x)
+//     for(i = 0; i < x; i++) {
+//         arr2d[i] = new Array(y);
+//         for(j = 0; j < y; j++) {
+//             if(i === 0 || j === 0 || i === x - 1 || j === y - 1) {
+//                 arr2d[i][j] = 0
+//             } else{ 
+//                 arr2d[i][j] = 1
+//             }
+//         }
+//     }
+//     return arr2d;
+// }
+// const matrix = createMatrix(15, 27);
+// const grid = new GridSystem(matrix);    
 
-grid.render();
+// grid.render();
+
+export default GridSystem;
