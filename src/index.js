@@ -2,6 +2,14 @@ import GridSystem from "./grid.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 
+    document.getElementById("audioBackground").volume = 0.01;
+
+    window.addEventListener("keydown", function (e) {
+        if (["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].indexOf(e.code) > -1) {
+            e.preventDefault();
+        }
+    }, false);
+
 
     function createMatrix(x, y) {
         let arr2d = new Array(x)

@@ -15,6 +15,8 @@ import king from "./assets/king.png"
 import kingCursor from "./assets/kingCursor.png"
 class GridSystem {
     constructor(matrix) {
+        this.highScore = 0;
+        this.record = 0
         this.matrix = matrix;
         this.uiContext = this.#getContext(1000, 580, "#99D0F2");
         this.outlineContext = this.#getContext(0, 0, "#444");
@@ -288,6 +290,8 @@ class GridSystem {
             this.#moveEnemy();
             this.#moveEnemy();
             this.#moveEnemy();
+            this.record++;
+            if (this.record > this.highScore) this.highScore = this.record;
             if(this.#fightPlayer() === true) {
                 this.player.health = 0;
             }
@@ -453,53 +457,47 @@ class GridSystem {
         this.uiContext.clearRect(0, 0, 50000, 50000)
         this.uiContext.fillStyle = "black";
         this.uiContext.font = "italic 20pt Courier"
+        this.uiContext.fillText("For the King!", 380, 70);
+        this.uiContext.fillText("High Score: " + this.highScore, 730, 30);
         if (this.enemy.health <= 0 && this.player.health <= 0) {
-            this.uiContext.fillText("A Tie", 730, 30);
             this.uiContext.fillText("The King is Dead", 50, 550);
             this.uiContext.fillText("Press R to Restart", 50, 30);
             this.uiContext.fillText("Petrine is Dead", 670, 550);
         } else if (this.enemy.health <= 0) {
-            this.uiContext.fillText("You Win", 730, 30);
             this.uiContext.fillText("Petrine is Slain", 50, 550);
             this.uiContext.fillText("Press R to Restart", 50, 30);
             this.uiContext.fillText("You Win", 670, 550);
         } else if (this.player.health <= 0 ) {
-            this.uiContext.fillText("You Lose", 730, 30);
             this.uiContext.fillText("The King is Dead", 50, 550);
             this.uiContext.fillText("Press R to Restart", 50, 30);
             this.uiContext.fillText("You Lose", 670, 550);
         } else if (this.#whichPlayer(this.stepOver)) {
             let showPlayer = this.#whichPlayer(this.stepOver);
             let n = Math.floor(Math.random() * showPlayer.sayings.length);
-            this.uiContext.fillText("Health: " + showPlayer.health + ", Attack: " + showPlayer.atk, 620, 30);
             this.uiContext.fillText(showPlayer.name, 50, 550);
             this.uiContext.fillText("Movements Left: " + showPlayer.moves, 50, 30);
             this.uiContext.fillText(showPlayer.sayings[n][0], showPlayer.sayings[n][1], 550);
         } else if (this.allEnemies.includes(this.stepOver)) {
             let showEnemy = this.#whichEnemy(this.stepOver)
             let n = Math.floor(Math.random() * showEnemy.sayings.length);
-            this.uiContext.fillText("HP: " + showEnemy.health + ", Attack " + showEnemy.atk, 620, 30);
             this.uiContext.fillText(showEnemy.name, 50, 550);
             this.uiContext.fillText("MV: " + showEnemy.moves, 50, 30);
             this.uiContext.fillText(showEnemy.sayings[n][0], showEnemy.sayings[n][1], 550);
         } else if(this.stepOver === 3) {
             let n = Math.floor(Math.random() * this.water.length);
         // this.uiContext.clearRect(0, 0, this.width, this.height)
-        this.uiContext.fillText("A Water Tile", 730, 30);
         this.uiContext.fillText("Players Cannot be Moved Here", 50, 550);
         this.uiContext.fillText("A Water Tile", 50, 30);
-            this.uiContext.fillText(this.water[n][0], this.water[n][1], 550);
+        this.uiContext.fillText(this.water[n][0], this.water[n][1], 550);
         } else if (this.stepOver === 7 || this.stepOver === 8) {
         let n = Math.floor(Math.random() * this.stone.length);
         // this.uiContext.clearRect(0, 0, this.width, this.height)
-        this.uiContext.fillText("A Stone Column", 730, 30);
         this.uiContext.fillText("Players Cannot be Moved Here", 50, 550);
         this.uiContext.fillText("A Stone Column", 50, 30);
         this.uiContext.fillText(this.stone[n][0], this.stone[n][1], 550);
         } else if (this.stepOver === 1) {
             let n = Math.floor(Math.random() * this.tile.length);
             // this.uiContext.clearRect(0, 0, this.width, this.height)
-            this.uiContext.fillText("A Tile", 730, 30);
             this.uiContext.fillText("Players move along these", 50, 550);
             this.uiContext.fillText("A Tile", 50, 30);
             this.uiContext.fillText(this.tile[n][0], this.tile[n][1], 550);
@@ -550,6 +548,7 @@ class GridSystem {
 
     #restart = ({ keyCode }) => {
         if(keyCode === 82){
+            this.record = 0;
       
         this.matrix[this.player2.y][this.player2.x] = 1;
         this.player2 = {
