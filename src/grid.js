@@ -44,6 +44,7 @@ class GridSystem {
             ["How did I get this job", 600],
             ["Not really a fighter", 640]
         ]
+        this.player2.saidSayings = [];
 
         this.player3 = { y: 2, x: 4, color: "#338642", value: 5, health: 20,
             atk: 3, spd: 0, moves: 6, startMoves: 6, name: "Boyd, Stalwart Protector"}
@@ -62,6 +63,7 @@ class GridSystem {
             ["Do not approach!", 700],  
             ["Get behind me!", 740]
         ]
+        this.player3.saidSayings = [];
 
         this.player = {y: 3, x: 3, color: "#3D7EC7", value: 2, health: 5, 
             atk: 1, spd: 2, moves: 6, startMoves: 6, name: "The King"}
@@ -74,6 +76,7 @@ class GridSystem {
             ["If only I had a gun", 650],
             ["Is that a chair?", 690]
         ]
+        this.player.saidSayings = [];
 
 
         this.enemy = {x :23, y :11, color: "red", value: 4, health: 40,
@@ -87,6 +90,7 @@ class GridSystem {
             ["Is it hot or just me?", 590],
             ["Be careful, you'll burn", 570],
         ]
+        this.enemy.saidSayings = [];
 
         this.cursor = { y: 2, x: 2, color: "white", value: 10 }
         this.matrix[this.cursor.x][this.cursor.y] = 10
@@ -101,7 +105,8 @@ class GridSystem {
         document.addEventListener("keydown", this.#restart)
   
 
-        this.water = [
+        this.water = {};
+        this.water.sayings = [
             ["Be careful, you'll drown", 570],
             ["This tile is water", 650],
             ["Are you thirsty?", 710],
@@ -128,7 +133,10 @@ class GridSystem {
             ["I never liked water", 660],
             ["Is this an easter egg?", 610]
         ]
-        this.stone = [
+        this.water.saidSayings = [];
+
+        this.stone = {};
+        this.stone.sayings = [
             ["This tile is stone", 650],
             ["Be wary: stone pillar here", 550],
             ["Looks Grecian", 730],
@@ -146,7 +154,9 @@ class GridSystem {
             ["Stones", 880],
             ["Is this an easter egg?", 550]
         ]
-        this.tile = [
+        this.stone.saidSayings = [];
+        this.tile = {};
+        this.tile.sayings = [
             ["TILES ROCK MY WORLD", 630],
             ["I LOVE TILES A LOT!", 630],
             ["INTERIOR DESIGN!!!", 635],
@@ -167,7 +177,8 @@ class GridSystem {
             ["I like game design", 650],
             ["A cracked tile", 750],
             ["Is this an easter egg?", 620]
-        ]
+        ];
+        this.tile.saidSayings = [];
         this.render();
     }
 
@@ -473,34 +484,34 @@ class GridSystem {
             this.uiContext.fillText("You Lose", 670, 550);
         } else if (this.#whichPlayer(this.stepOver)) {
             let showPlayer = this.#whichPlayer(this.stepOver);
-            let n = Math.floor(Math.random() * showPlayer.sayings.length);
+            let n = this.#newSaying(showPlayer.sayings, showPlayer.saidSayings);
             this.uiContext.fillText(showPlayer.name, 50, 550);
             this.uiContext.fillText("Movements Left: " + showPlayer.moves, 50, 30);
             this.uiContext.fillText(showPlayer.sayings[n][0], showPlayer.sayings[n][1], 550);
         } else if (this.allEnemies.includes(this.stepOver)) {
             let showEnemy = this.#whichEnemy(this.stepOver)
-            let n = Math.floor(Math.random() * showEnemy.sayings.length);
+            let n = this.#newSaying(this.enemy.sayings, this.enemy.saidSayings);
             this.uiContext.fillText(showEnemy.name, 50, 550);
             this.uiContext.fillText("MV: " + showEnemy.moves, 50, 30);
             this.uiContext.fillText(showEnemy.sayings[n][0], showEnemy.sayings[n][1], 550);
         } else if(this.stepOver === 3) {
-            let n = Math.floor(Math.random() * this.water.length);
+            let n = this.#newSaying(this.water.sayings, this.water.saidSayings);
         // this.uiContext.clearRect(0, 0, this.width, this.height)
         this.uiContext.fillText("Players Cannot be Moved Here", 50, 550);
         this.uiContext.fillText("A Water Tile", 50, 30);
-        this.uiContext.fillText(this.water[n][0], this.water[n][1], 550);
+        this.uiContext.fillText(this.water.sayings[n][0], this.water.sayings[n][1], 550);
         } else if (this.stepOver === 7 || this.stepOver === 8) {
-        let n = Math.floor(Math.random() * this.stone.length);
+            let n = this.#newSaying(this.stone.sayings, this.stone.saidSayings);
         // this.uiContext.clearRect(0, 0, this.width, this.height)
         this.uiContext.fillText("Players Cannot be Moved Here", 50, 550);
         this.uiContext.fillText("A Stone Column", 50, 30);
-        this.uiContext.fillText(this.stone[n][0], this.stone[n][1], 550);
+        this.uiContext.fillText(this.stone.sayings[n][0], this.stone.sayings[n][1], 550);
         } else if (this.stepOver === 1) {
-            let n = Math.floor(Math.random() * this.tile.length);
+            let n = this.#newSaying(this.tile.sayings, this.tile.saidSayings);
             // this.uiContext.clearRect(0, 0, this.width, this.height)
             this.uiContext.fillText("Players move along these", 50, 550);
             this.uiContext.fillText("A Tile", 50, 30);
-            this.uiContext.fillText(this.tile[n][0], this.tile[n][1], 550);
+            this.uiContext.fillText(this.tile.sayings[n][0], this.tile.sayings[n][1], 550);
         }
 
         function topWallCheck(node) {
@@ -596,6 +607,19 @@ class GridSystem {
         for(let i = 0; i < n; i++) {
             this.render();
         }
+    }
+
+
+    #newSaying(lines, said) {
+        let n = Math.floor(Math.random() * lines.length);
+        while (said.includes(n)) {
+            n = Math.floor(Math.random() * lines.length);
+        }
+        if (said > 5) {
+            said.push(n);
+            said.shift;
+        }
+        return n;
     }
 }
 
