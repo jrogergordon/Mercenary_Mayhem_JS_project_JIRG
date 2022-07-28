@@ -1,53 +1,27 @@
 Jacob Irving Roger-Gordon;
 
-Project name: Mercenary Mayhem;
+Project name: For the King;
 Project type: Game;
 
-In Mercenary Mayhem, users will be able to:
+Intro:
+Hello Dear Reader! Thank you for looking at my dear old game. For the King
+is a grid based strategy game, that plays a little bit like tag. You, the player,
+are in control of two pieces: the King and the King's protector Boyd, both
+loacted in the upper right of the map. Petrine, the enemy, is located in the bottom
+right and she will seek out the King. Petrine moves 4 spaces on each turn while
+the King and Boyd can move 6 on each turn.
+If Petrine touches the King she will slay him and you will lose! But if Boyd hits
+Petrine twice he will kill her and you will win! Good luck!
 
-{Core features and functionalities:  
-1: Users will be able to move character pieces around a grid board;
-2: Users will be able to fight pieces controlled by an enemy AI to win the game;
-3: Users will be able to set the difficulty level of the AI;
-4: Users will be able to view animations of pieces fighting;
-5: Users will be able to view the information of character pieces;
-}
-{Additional features
-1.1: I will implement A* to inform AI movements as well as inform players of their characters available moves;
-1.2: Canvas animations to display character pieces;
-1.3: Animations and text will flash on screen when the game is won or lost;
-}
-
-{ In addition, my project will include:
- 1: My ReadMe will have details about the project incuding instructions for operating the game and details about how the game works;
- 2: Upon starting my game users will be presented by an instruction screen which will detail the rules of the game as well as how to interact with the game;
-}
+Live link: https://jrogergordon.github.io/Mercenary_Mayhem_JS_project_JIRG/
 
 
-{Libraries and API's:
-To create this project I'll be Canvas and DOM;
-}
+Functionality/Features:
+
+Pieces can be moved across a map:
+![Pieces on a Map](/src/assets/Functionality1.png "Pieces on a Map")
+![Pieces Move](/src/assets/Functionality2.png "Pieces Move")
 
 
-{Implementation Timeline:
-Friday and Weekend {
-    Create a grid map using canvas and populate it with pieces. Be able to movie pieces around the grid;
-}
 
-Monday {
-    Allow users to move characters based on input, enable combat through user input;
-}
-
-Tuesday {
-    Generate AI;
-}
-
-Wednesday {
-    Create the rest of the UI;
-}
-
-Thursday Morning {
-    If nothing else needs fixing: Implement A*;
-}
-
-}
+and then a breakdown of your integrated MVPs. For each MVP, be sure to include a small description of your MVP (what user’s can do), an image or gif of that MVP working on your application’s live site, and a cool code snippet (that pertains to that MVP).

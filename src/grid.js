@@ -28,7 +28,7 @@ class GridSystem {
         this.moves = [[1, 0], [-1, 0], [0, 1], [0, -1]];
 
         this.player2 = {y: 4, x: 2, color: "#338642", value: 1, health: 20,
-            atk: 3, spd: 5, moves: 6, startMoves: 6, name: "Jeff, the tepid", sayings: []}
+            atk: 20, spd: 5, moves: 6, startMoves: 6, name: "Jeff, the tepid", sayings: []}
         this.matrix[this.player2.x][this.player2.y] = 5;
         this.player2.sayings = [
             ["I am Jeff, the Tepid", 640],
@@ -47,7 +47,7 @@ class GridSystem {
         this.player2.saidSayings = [];
 
         this.player3 = { y: 2, x: 4, color: "#338642", value: 5, health: 20,
-            atk: 3, spd: 0, moves: 6, startMoves: 6, name: "Boyd, Stalwart Protector"}
+            atk: 20, spd: 0, moves: 6, startMoves: 6, name: "Boyd, Stalwart Protector"}
         this.matrix[this.player3.x][this.player3.y] = 1;
         this.player3.sayings = [
             ["I am Boyd, hello", 700],
@@ -292,7 +292,6 @@ class GridSystem {
         }
         if(this.currPlayer.moves === 0){
             if(this.#fightEnemy(this.currPlayer)){
-                this.currPlayer.health -= this.enemy.atk;
                 this.enemy.health -= this.currPlayer.atk;
             }
             let holder = this.currPlayer
@@ -570,27 +569,20 @@ class GridSystem {
         this.matrix[this.player2.y][this.player2.x] = 1;
             
         this.matrix[this.player3.y][this.player3.x] = 1;
-        this.player3 = {
-            y: 2, x: 4, color: "#338642", value: 5, health: 20,
-            atk: 3, spd: 0, moves: 6, startMoves: 6, name: "Boyd, Stalwart Protector",
-            sayings: this.player3.sayings
-        }
+        this.player3.x = 4;
+        this.player3.y = 2;
         this.matrix[this.player3.y][this.player3.x] = 5;
 
         this.matrix[this.player.y][this.player.x] = 1;
-        this.player = {
-            y: 3, x: 3, color: "#3D7EC7", value: 2, health: 5,
-            atk: 1, spd: 2, moves: 6, startMoves: 6, name: "The King",
-            sayings: this.player.sayings
-        }
+        this.player.x = 3;
+        this.player.y = 3;
+        this.player.health = 4;
         this.matrix[this.player.x][this.player.y] = 2;
 
         this.matrix[this.enemy.y][this.enemy.x] = 1;
-        this.enemy = {
-            x: 23, y: 11, color: "red", value: 4, health: 40,
-            atk: 4, spd: 3, moves: 4, name: "Petrine, the Firebrand", atk: 5, spd: 4,
-            sayings: this.enemy.sayings
-        }
+        this.enemy.x = 23;
+        this.enemy.y = 11;
+        this.enemy.health = 40;
         this.matrix[this.enemy.y][this.enemy.x] = 4;
 
 
