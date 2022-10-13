@@ -13,12 +13,18 @@ import enemyCursor from "./assets/cursorEnemy.png"
 import endWall from "./assets/endWall.png"
 import king from "./assets/king.png"
 import kingCursor from "./assets/kingCursor.png"
+let combatNoise = new Audio('swordClang.mp3');
+let gameWon = new Audio('victory.mp3');
+let gameLost = new Audio('defeat.mp3');
+combatNoise.volume = 0.5;
+gameWon.volume = 0.5;
+gameLost.volume = 0.5;
 class GridSystem {
     constructor(matrix) {
         this.highScore = 0;
         this.record = 0
         this.matrix = matrix;
-        this.uiContext = this.#getContext(1000, 580, "#99D0F2");
+        this.uiContext = this.#getContext(1000, 580, "#00000");
         this.outlineContext = this.#getContext(0, 0, "#444");
         this.topContext = this.#getContext(0, 0, "#111", true);
         this.cellSize = 25;
@@ -26,6 +32,12 @@ class GridSystem {
         this.turnCounter = 10;
         this.gameOver = false;
         this.moves = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+        // this.combatNoise = new Audio(fightSound);
+        // this.gameWon = new Audio(winSound);
+        // this.gameLost = new Audio(loseSound);
+        // this.combatNoise.volume = 0.5;
+        // this.gameWon.volume = 0.5;
+        // this.gameLost.volume = 0.5;
 
         this.player2 = {y: 4, x: 2, color: "#338642", value: 1, health: 20,
             atk: 20, spd: 5, moves: 6, startMoves: 6, name: "Jeff, the tepid", sayings: []}
@@ -128,7 +140,7 @@ class GridSystem {
             ["Water-reminds me of liquid", 550],
             ["Water, spelled 'W-a-t-e-r'", 550],
             ["We all float down here", 610],
-            ["Smooth like water", 700],
+            ["Smooth like stone", 700],
             ["Go ahead, drink", 700],
             ["I never liked water", 660],
             ["Is this an easter egg?", 610]
@@ -148,7 +160,7 @@ class GridSystem {
             ["Don't touch the Stone", 630],
             ["Do NOT eat", 830]
             ["You like Jazz?", 800],
-            ["Smooth like water", 630],
+            ["Smooth like tile", 630],
             ["Small stone", 830],
             ["Stones are out of shape", 550],
             ["Stones", 880],
@@ -183,7 +195,8 @@ class GridSystem {
     }
 
     #selectPlayer = ( { keyCode } ) => {
-        if (keyCode === 32 && this.allPlayers.includes(this.stepOver)) {
+        if (keyCode === 32 && this.allPlayers.includes(this.stepOver) &&
+         this.player.health > 0 && this.enemy.health > 0) {
             this.matrix[this.currPlayer.y][this.currPlayer.x] = 10;
             this.currPlayer = this.#whichPlayer(this.stepOver)
             this.stepOver = this.currPlayer.value;
@@ -201,7 +214,8 @@ class GridSystem {
     }
 
     #movePlayer = ( { keyCode } ) => {
-        if(keyCode === 37) {
+        if (keyCode === 37 &&
+            this.player.health > 0 && this.enemy.health > 0) {
             if (this.#isValidMove(-1, 0, this.currPlayer)) {
                 if (this.currPlayer.moves === this.currPlayer.startMoves) {
                     this.matrix[this.currPlayer.y][this.currPlayer.x] = 10;
@@ -223,7 +237,8 @@ class GridSystem {
                     this.currPlayer.moves = 0;
                 }
             }
-        } else if(keyCode === 39) {
+        } else if (keyCode === 39 &&
+            this.player.health > 0 && this.enemy.health > 0) {
             if (this.#isValidMove(1, 0, this.currPlayer)) {
                 if (this.currPlayer.moves === this.currPlayer.startMoves) {
                     this.matrix[this.currPlayer.y][this.currPlayer.x] = 10;
@@ -245,7 +260,8 @@ class GridSystem {
                     this.currPlayer.moves = 0;
                 }
             }
-        } else if (keyCode === 38) {
+        } else if (keyCode === 38 &&
+            this.player.health > 0 && this.enemy.health > 0) {
             if (this.#isValidMove(0, -1, this.currPlayer)) {
                 if (this.currPlayer.moves === this.currPlayer.startMoves) {
                     this.matrix[this.currPlayer.y][this.currPlayer.x] = 10;
@@ -267,7 +283,8 @@ class GridSystem {
                     this.currPlayer.moves = 0;
                 }
             }
-        } else if (keyCode === 40) {
+        } else if (keyCode === 40 &&
+            this.player.health > 0 && this.enemy.health > 0) {
             if (this.#isValidMove(0, 1, this.currPlayer)) {
                 if (this.currPlayer.moves === this.currPlayer.startMoves) {
                     this.matrix[this.currPlayer.y][this.currPlayer.x] = 10;
@@ -293,17 +310,24 @@ class GridSystem {
         if(this.currPlayer.moves === 0){
             if(this.#fightEnemy(this.currPlayer)){
                 this.enemy.health -= this.currPlayer.atk;
+                combatNoise.play();
+                if(this.enemy.health < 0) {
+                    gameWon.play();
+                }
             }
             let holder = this.currPlayer
             this.currPlayer = this.enemy;
-            this.#moveEnemy();
-            this.#moveEnemy();
-            this.#moveEnemy();
-            this.#moveEnemy();
-            this.record++;
+            if(this.enemy.health > 0) {
+                this.#moveEnemy();
+                this.#moveEnemy();
+                this.#moveEnemy();
+                this.#moveEnemy();
+                this.record++;
+            }
             if (this.record > this.highScore) this.highScore = this.record;
             if(this.#fightPlayer() === true) {
                 this.player.health = 0;
+                gameLost.play();
             }
             holder.moves = holder.startMoves;
             this.currPlayer = this.cursor;
@@ -382,8 +406,8 @@ class GridSystem {
     }
 
     #getContext(w, h, color = "#111", isTransparent = false) {
-        this.canvas = document.createElement("canvas")
-        this.context = this.canvas.getContext("2d")
+        this.canvas = document.createElement("canvas");
+        this.context = this.canvas.getContext("2d");
         this.width = this.canvas.width = w;
         this.height = this.canvas.height = h;
         this.canvas.style.position = "absolute";
@@ -397,6 +421,10 @@ class GridSystem {
         this.canvas.style.marginTop = center.y;
         document.body.appendChild(this.canvas);
         return this.context;
+    }
+
+    #pause = async (x) => {
+        await sleep(x)
     }
 
     render() {
@@ -418,44 +446,104 @@ class GridSystem {
                 let currentNode = [row, col];
                 const image = new Image();
                 image.src = dungeon;
-                if (this.matrix[row][col] === 10) {
-                    if (this.stepOver === 3) {
-                        image.src = waterCursor;
-                    } else if (this.stepOver === 1){
-                        image.src = floorCursor;
-                    } else if (this.stepOver === 8) {
-                        image.src = topColumnCursor;
-                    } else if (this.stepOver === 7) {
-                        image.src = bottomColumnCursor;
-                    } else if (this.stepOver === 5) {
-                        image.src = knightCursor;
-                    } else if (this.stepOver === 4) {
-                        image.src = enemyCursor;
-                    } else if (this.stepOver === 2) {
-                        image.src = kingCursor;
-                    }
-                } else if (this.matrix[row][col] === 0){
-                    image.src = endWall;
-                } else if(this.matrix[row][col] === 5) {
-                    image.src = knight;
-                } else if (this.matrix[row][col] === 6) {
-            
-                } else if (row < 9 && row > 5 && col < 17 && col > 9) {
-                    image.src = water;
-                    this.matrix[row][col] = 3; 
-                } else if (wallCheck(currentNode)) {
-                    image.src = column;
-                    if (topWallCheck(currentNode)){
-                        image.src = topColumn;
-                        this.matrix[row][col] = 8; 
-                    } else{
-                        this.matrix[row][col] = 7; 
-                    }
-                } else if(this.matrix[row][col] === 2) {
-                    image.src = king;
-                } else if(this.matrix[row][col] === 4) {
-                    image.src = enemy;
+                switch(this.matrix[row][col]) {
+                    case 10:
+                       let img;
+                        switch(this.stepOver) {
+                            case 3:
+                                img = waterCursor
+                                break;
+                            case 1: 
+                                img = floorCursor
+                                break;
+                            case 8:
+                                img = topColumnCursor
+                                break;
+                            case 7:
+                                img = bottomColumnCursor
+                                break;
+                            case 5:
+                                img = knightCursor
+                                break;
+                            case 4:
+                                img = enemyCursor
+                                break;
+                            case 2:
+                                img = kingCursor
+                                break;
+                            default:
+                                img = floorCursor
+                                break;
+                        }
+                        image.src = img
+                        break;
+                    case 0:
+                        image.src = endWall
+                        break;
+                    case 5:
+                        image.src = knight
+                        break;
+                    // case 6:
+                    //     break;
+                    case 3:
+                        image.src = water
+                        break;
+                    case 2: 
+                        image.src = king
+                        break;
+                    case 4:
+                        image.src = enemy
+                        break;
+                    case 7:
+                        image.src = column
+                        break;
+                    case 8:
+                        image.src = topColumn
+                        break;
+                    case 1:
+                        image.src = dungeon
+                        break;
+                    default: 
+                        image.src = dungeon
+                        break;
                 }
+                    // if (this.stepOver === 3) {
+                    //     image.src = waterCursor;
+                    // } else if (this.stepOver === 1){
+                    //     image.src = floorCursor;
+                    // } else if (this.stepOver === 8) {
+                    //     image.src = topColumnCursor;
+                    // } else if (this.stepOver === 7) {
+                    //     image.src = bottomColumnCursor;
+                    // } else if (this.stepOver === 5) {
+                    //     image.src = knightCursor;
+                    // } else if (this.stepOver === 4) {
+                    //     image.src = enemyCursor;
+                    // } else if (this.stepOver === 2) {
+                    //     image.src = kingCursor;
+                    // }
+                // } else if (this.matrix[row][col] === 0){
+                //     image.src = endWall;
+                // } else if(this.matrix[row][col] === 5) {
+                //     image.src = knight;
+                // } else if (this.matrix[row][col] === 6) {
+            
+                // } else if (row < 9 && row > 5 && col < 17 && col > 9) {
+                //     image.src = water;
+                //     this.matrix[row][col] = 3; 
+                // } else if (wallCheck(currentNode)) {
+                //     image.src = column;
+                //     if (topWallCheck(currentNode)){
+                //         image.src = topColumn;
+                //         this.matrix[row][col] = 8; 
+                //     } else{
+                //         this.matrix[row][col] = 7; 
+                //     }
+                // } else if(this.matrix[row][col] === 2) {
+                //     image.src = king;
+                // } else if(this.matrix[row][col] === 4) {
+                //     image.src = enemy;
+                // }
                 // this.outlineContext.fillStyle = color;
                 // this.outlineContext.fillRect(col * (this.cellSize + this.padding),
                 // row * (this.cellSize + this.padding),
@@ -465,75 +553,75 @@ class GridSystem {
             }
         }
         this.uiContext.clearRect(0, 0, 50000, 50000)
-        this.uiContext.fillStyle = "black";
+        this.uiContext.fillStyle = "white";
         this.uiContext.font = "italic 20pt Courier"
         this.uiContext.fillText("For the King!", 380, 70);
-        this.uiContext.fillText("High Score: " + this.highScore, 730, 30);
+        this.uiContext.fillText("High Score: " + this.highScore, 730, 60);
         if (this.enemy.health <= 0 && this.player.health <= 0) {
             this.uiContext.fillText("The King is Dead", 50, 550);
-            this.uiContext.fillText("Press R to Restart", 50, 30);
+            this.uiContext.fillText("Press R to Restart", 50, 60);
             this.uiContext.fillText("Petrine is Dead", 670, 550);
         } else if (this.enemy.health <= 0) {
             this.uiContext.fillText("Petrine is Slain", 50, 550);
-            this.uiContext.fillText("Press R to Restart", 50, 30);
+            this.uiContext.fillText("Press R to Restart", 50, 60);
             this.uiContext.fillText("You Win", 670, 550);
         } else if (this.player.health <= 0 ) {
             this.uiContext.fillText("The King is Dead", 50, 550);
-            this.uiContext.fillText("Press R to Restart", 50, 30);
+            this.uiContext.fillText("Press R to Restart", 50, 60);
             this.uiContext.fillText("You Lose", 670, 550);
         } else if (this.#whichPlayer(this.stepOver)) {
             let showPlayer = this.#whichPlayer(this.stepOver);
             let n = this.#newSaying(showPlayer.sayings, showPlayer.saidSayings);
             this.uiContext.fillText(showPlayer.name, 50, 550);
-            this.uiContext.fillText("Movements Left: " + showPlayer.moves, 50, 30);
+            this.uiContext.fillText("Movements Left: " + showPlayer.moves, 50, 60);
             this.uiContext.fillText(showPlayer.sayings[n][0], showPlayer.sayings[n][1], 550);
         } else if (this.allEnemies.includes(this.stepOver)) {
             let showEnemy = this.#whichEnemy(this.stepOver)
             let n = this.#newSaying(this.enemy.sayings, this.enemy.saidSayings);
             this.uiContext.fillText(showEnemy.name, 50, 550);
-            this.uiContext.fillText("MV: " + showEnemy.moves, 50, 30);
+            this.uiContext.fillText("MV: " + showEnemy.moves, 50, 60);
             this.uiContext.fillText(showEnemy.sayings[n][0], showEnemy.sayings[n][1], 550);
         } else if(this.stepOver === 3) {
             let n = this.#newSaying(this.water.sayings, this.water.saidSayings);
         // this.uiContext.clearRect(0, 0, this.width, this.height)
         this.uiContext.fillText("Players Cannot be Moved Here", 50, 550);
-        this.uiContext.fillText("A Water Tile", 50, 30);
+        this.uiContext.fillText("A Water Tile", 50, 60);
         this.uiContext.fillText(this.water.sayings[n][0], this.water.sayings[n][1], 550);
         } else if (this.stepOver === 7 || this.stepOver === 8) {
             let n = this.#newSaying(this.stone.sayings, this.stone.saidSayings);
         // this.uiContext.clearRect(0, 0, this.width, this.height)
         this.uiContext.fillText("Players Cannot be Moved Here", 50, 550);
-        this.uiContext.fillText("A Stone Column", 50, 30);
+            this.uiContext.fillText("A Stone Column", 50, 60);
         this.uiContext.fillText(this.stone.sayings[n][0], this.stone.sayings[n][1], 550);
         } else if (this.stepOver === 1) {
             let n = this.#newSaying(this.tile.sayings, this.tile.saidSayings);
             // this.uiContext.clearRect(0, 0, this.width, this.height)
             this.uiContext.fillText("Players move along these", 50, 550);
-            this.uiContext.fillText("A Tile", 50, 30);
+            this.uiContext.fillText("A Tile", 50, 60);
             this.uiContext.fillText(this.tile.sayings[n][0], this.tile.sayings[n][1], 550);
         }
 
-        function topWallCheck(node) {
-            const topWall = [[4, 8], [9, 18], [4, 18], [9, 8]];
-            for (let i = 0; i < topWall.length; i++) {
-                if (topWall[i][0] === node[0] && topWall[i][1] === node[1]) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        function wallCheck(node) {
-            const cols = [[10, 8], [9, 8], [10, 9], 
-            [4, 9], [5, 8], [4, 8], 
-            [10, 18], [10, 17], [9, 18],
-            [4, 18], [4, 17], [5, 18]]
-            for(let i = 0; i < cols.length; i++){
-                if(cols[i][0] === node[0] && cols[i][1] === node[1]){
-                    return true;
-                } 
-            }
-            return false;
-        }
+        // function topWallCheck(node) {
+        //     const topWall = [[4, 8], [9, 18], [4, 18], [9, 8]];
+        //     for (let i = 0; i < topWall.length; i++) {
+        //         if (topWall[i][0] === node[0] && topWall[i][1] === node[1]) {
+        //             return true;
+        //         }
+        //     }
+        //     return false;
+        // }
+        // function wallCheck(node) {
+        //     const cols = [[10, 8], [9, 8], [10, 9], 
+        //     [4, 9], [5, 8], [4, 8], 
+        //     [10, 18], [10, 17], [9, 18],
+        //     [4, 18], [4, 17], [5, 18]]
+        //     for(let i = 0; i < cols.length; i++){
+        //         if(cols[i][0] === node[0] && cols[i][1] === node[1]){
+        //             return true;
+        //         } 
+        //     }
+        //     return false;
+        // }
     }
     clearScreen() {
         this.uiContext.fillStyle = "black";

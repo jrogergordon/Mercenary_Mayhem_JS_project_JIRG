@@ -3,31 +3,55 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <link rel="stylesheet" href="./dist/main.css" />
-    <script src="./dist/main.js"></script>
+    <link rel="stylesheet" href="./src/index.scss" />
+    <script id="game-board" src="./dist/main.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 
 <body id="111">
+    <div id="nav-bar">
+        <div class="title">For The King!</div>
+        <div class="author">a game by Jacob Irving Roger-Gordon</div>
+    </div>
     <div id="div2">
         <a href="https://github.com/jrogergordon"><img src="./src/assets/github.png" alt="JIRG github" style="width:42px;height:42px;"></a>
          <a href="https://www.linkedin.com/in/jacobrogergordon/"><img src="./src/assets/linkedin.png" alt="JIRG LinkedIn" style="width:42px;height:42px;"></a>
     </div>
 
-    <li id="audio">
-        <audio controls id="audioBackground" class="audio-example" src="./src/audio/backgroundAudio.mp3" autoplay>
-    </li>
-    <style>
-        body {
-            background-image: url('./src/assets/htmlbackground.png');
-        }
-    </style>
-    <div class="boxed" id="div1">
-        <img src="./src/assets/contract.png" alt="Instructions"></a>
+    <div class="arrow-keys-container">
+        <img class="arrow-keys" src="./src/assets/aarows.png">
+        <p class="deep-inst">Use the arrow keys and spacebar to select a character and move around.
+           <br> <br> Keep the King safe and kill the assassin!
+        </p>
+    </div>
+    <div class="instructions-container">
+    <div class="instructions">
+        <div>
+        Hello brave sir knight! Earlier you were tasked with guarding the King, 
+        and just your luck now an assassin has appeared! Use the on screen cursor
+        along with the arrow keys to move around the screen. Use the spacebar to
+        select a character (either the King or the guard Boyd) and move them around.
+        If Boyd touches the assassin he will damage him. If he damages him twice 
+        the assassin will die! But beware! If the assassin touches the king even once
+        he will kill the king and you will lose! The King and Boyd can move 6 spaces each,
+        after each time you move either character the assassin, Petrine, will move 4 spaces.
+         &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Good Luck!
+        </div>
+        <button class="close-button">
+            Close
+        </button>
+    </div>
     </div>
 
-    <div class="boxed" id="div3">
-        <img src="./src/assets/contract2.png" alt="Instructions"></a>
-    </div>
+
+    <!-- <li id="audio">
+        <audio controls id="audioBackground" class="audio-example" src="./src/audio/backgroundAudio.mp3" autoplay>
+    </li> -->
+    <style>
+        body {
+            background-color: black;
+        }
+    </style>
     <!-- <div id = "112">
         <script id="553" src="./src/grid.js"></script>
         <div class="boxed">
