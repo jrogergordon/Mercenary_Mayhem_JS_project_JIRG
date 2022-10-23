@@ -67,10 +67,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let instructions = document.querySelector('.instructions');
     let close_instructions = document.querySelector('.close-button');
-
+    let constInst = document.querySelector('.in-game-inst')
+    let music = document.querySelector('.audio-example')
 
     close_instructions.addEventListener('click', () => {
         instructions.classList.add('invis');
+        constInst.classList.add('present');
+        music.volume = 0.07;
+        music.play();
+        let playingMusic = true;
     });
+
+
+    
     grid.render();
 })

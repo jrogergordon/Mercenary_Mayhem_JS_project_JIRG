@@ -99,3 +99,32 @@
 .invis {
   opacity: 0;
 }
+
+.in-game-inst {
+  position: relative;
+  left: 75%;
+  top: 30%;
+  background-color: wheat;
+  font-family: "Press Start 2P";
+  padding: 15px 32px;
+  border-radius: 10px;
+  opacity: 0;
+  inline-size: 250px;
+  overflow-wrap: break-word;
+  position: fixed;
+}
+
+.inst-li {
+  padding: 5px;
+}
+
+.present {
+  opacity: 1;
+}
+
+.in-game-inst-title {
+  font-family: "Press Start 2P";
+  color: rgb(21, 19, 19);
+  font-size: large;
+  border-bottom: 2px solid rgb(255, 255, 255);
+}

@@ -7,18 +7,24 @@ import topColumn from "./assets/topColumn.png"
 import topColumnCursor from "./assets/topColumnCursor.png"
 import bottomColumnCursor from "./assets/bottonColumnCursor.png"
 import knight from "./assets/knight1.png"
-import knightCursor from "./assets/knightCursor.png"
-import enemy from "./assets/enemy.png"
-import enemyCursor from "./assets/cursorEnemy.png"
-import endWall from "./assets/endWall.png"
-import king from "./assets/king.png"
-import kingCursor from "./assets/kingCursor.png"
-let combatNoise = new Audio('swordClang.mp3');
-let gameWon = new Audio('victory.mp3');
-let gameLost = new Audio('defeat.mp3');
-combatNoise.volume = 0.5;
-gameWon.volume = 0.5;
-gameLost.volume = 0.5;
+import knightCursor from "./assets/knightCursor.png";
+import enemy from "./assets/enemy.png";
+import enemyCursor from "./assets/cursorEnemy.png";
+import endWall from "./assets/endWall.png";
+import king from "./assets/king.png";
+import kingCursor from "./assets/kingCursor.png";
+let combatNoise = document.getElementsByClassName('audio-fight');
+let gameWon = document.getElementsByClassName('audio-win');
+let gameLost = document.getElementsByClassName('audio-lose');
+// let combatNoise = combatNoises[0];
+// console.log(combatNoise);
+
+// let combatNoise = new Audio('./assets/audio/sworClang.mp3');
+// let gameWon = new Audio('./assets/audio/victory.mp3');
+// let gameLost = new Audio('./assets/audio/defeat.mp3');
+// combatNoise.volume = 0.5;
+// gameWon.volume = 0.5;
+// gameLost.volume = 0.5;
 class GridSystem {
     constructor(matrix) {
         this.highScore = 0;
@@ -26,7 +32,7 @@ class GridSystem {
         this.matrix = matrix;
         this.uiContext = this.#getContext(1000, 580, "#00000");
         this.outlineContext = this.#getContext(0, 0, "#444");
-        this.topContext = this.#getContext(0, 0, "#111", true);
+        // this.topContext = this.#getContext(0, 0, "#111", true);
         this.cellSize = 25;
         this.padding = 1;
         this.turnCounter = 10;
@@ -310,9 +316,9 @@ class GridSystem {
         if(this.currPlayer.moves === 0){
             if(this.#fightEnemy(this.currPlayer)){
                 this.enemy.health -= this.currPlayer.atk;
-                combatNoise.play();
-                if(this.enemy.health < 0) {
-                    gameWon.play();
+                combatNoise[0].play();
+                if(this.enemy.health < 1) {
+                    gameWon[0].play();
                 }
             }
             let holder = this.currPlayer
@@ -326,8 +332,7 @@ class GridSystem {
             }
             if (this.record > this.highScore) this.highScore = this.record;
             if(this.#fightPlayer() === true) {
-                this.player.health = 0;
-                gameLost.play();
+                gameLost[0].play();
             }
             holder.moves = holder.startMoves;
             this.currPlayer = this.cursor;
@@ -394,6 +399,7 @@ class GridSystem {
             (this.enemy.x === this.player.x + 1 && this.enemy.y === this.player.y) ||
             (this.enemy.x === this.player.x - 1 && this.enemy.y === this.player.y)) {
             fight = true
+            this.player.health = 0;
         }
         return fight
     }
@@ -439,8 +445,8 @@ class GridSystem {
         this.outlineContext.canvas.style.marginLeft = center.x;
         this.outlineContext.canvas.style.marginTop = center.y;
 
-        this.topContext.canvas.style.marginLeft = center.x;
-        this.topContext.canvas.style.marginTop = center.y;
+        // this.topContext.canvas.style.marginLeft = center.x;
+        // this.topContext.canvas.style.marginTop = center.y;
         for(let row = 0; row < this.matrix.length; row++){
             for (let col = 0; col < this.matrix[row].length; col++){
                 let currentNode = [row, col];
@@ -449,6 +455,7 @@ class GridSystem {
                 switch(this.matrix[row][col]) {
                     case 10:
                        let img;
+                    //    console.log(this.stepOver);
                         switch(this.stepOver) {
                             case 3:
                                 img = waterCursor
@@ -463,6 +470,8 @@ class GridSystem {
                                 img = bottomColumnCursor
                                 break;
                             case 5:
+                                // console.log(knightCursor);
+                                // console.log(img);
                                 img = knightCursor
                                 break;
                             case 4:
@@ -476,6 +485,8 @@ class GridSystem {
                                 break;
                         }
                         image.src = img
+                        // console.log(image); img and image.src and image work
+                        // console.log(image.src);
                         break;
                     case 0:
                         image.src = endWall
@@ -548,8 +559,13 @@ class GridSystem {
                 // this.outlineContext.fillRect(col * (this.cellSize + this.padding),
                 // row * (this.cellSize + this.padding),
                 // this.cellSize, this.cellSize);
-                this.outlineContext.drawImage(image, col * (this.cellSize + this.padding), row * (this.cellSize + this.padding))
-
+                // console.log(image);
+                // console.log(image.src);
+                // console.log(row); row and col work
+                // console.log(col);
+                console.log(this.cellSize);
+                console.log(this.padding);
+                this.outlineContext.drawImage(image, col * (this.cellSize + this.padding), row * (this.cellSize + this.padding));
             }
         }
         this.uiContext.clearRect(0, 0, 50000, 50000)
