@@ -738,6 +738,6 @@ class GridSystem {
 // const grid = new GridSystem(matrix);    
 
 // grid.render();
-//grid.rende
+//grid.render
 
 export default GridSystem;
