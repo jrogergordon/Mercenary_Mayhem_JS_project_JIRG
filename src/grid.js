@@ -324,10 +324,10 @@ class GridSystem {
             let holder = this.currPlayer
             this.currPlayer = this.enemy;
             if(this.enemy.health > 0) {
-                setTimeout(() => { this.#moveEnemy(); }, 5000);
-                setTimeout(() => { this.#moveEnemy(); }, 5000);
-                setTimeout(() => { this.#moveEnemy(); }, 5000);
-                setTimeout(() => { this.#moveEnemy(); }, 5000);
+                this.#moveEnemy();
+                this.#moveEnemy();
+                this.#moveEnemy();
+                this.#moveEnemy();
                 this.record++;
             }
             if (this.record > this.highScore) this.highScore = this.record;
