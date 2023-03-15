@@ -617,6 +617,7 @@ class GridSystem {
             this.uiContext.fillText(this.tile.sayings[n][0], this.tile.sayings[n][1], 550);
         }
 
+        //
         // function topWallCheck(node) {
         //     const topWall = [[4, 8], [9, 18], [4, 18], [9, 8]];
         //     for (let i = 0; i < topWall.length; i++) {
